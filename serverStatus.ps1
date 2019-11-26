@@ -31,8 +31,8 @@ Do{
                         if($OutageHosts -ne $Null -and $OutageHosts.ContainsKey($_)){
                                 #Potential candidate where mail should be sent stating that the server is now available
                                 $secpasswd = ConvertTo-SecureString "lggcvgwwofgcsizr" -AsPlainText -Force
-                                $cred = New-Object System.Management.Automation.PSCredential ("email@email.com", $secpasswd)
-                                Send-MailMessage  -SmtpServer $SMTPServer -From 'email@email.com' -To 'email@email.com' -Subject "Server is available $_" -Body "$_ is available now. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
+                                $cred = New-Object System.Management.Automation.PSCredential ($EmailFrom, $secpasswd)
+                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is available $_" -Body "$_ is available now. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
                                 $OutageHosts.remove($_)     
                                 [Array]$AvailableServersList += $_    
                         }else{
@@ -64,8 +64,8 @@ Do{
                                                         Write-output $time | Out-File -FilePath $LogFileOutputPath -Append
                                                         if ($time -gt $EmailTimeOut){
                                                                 $secpasswd = ConvertTo-SecureString "lggcvgwwofgcsizr" -AsPlainText -Force
-                                                                $cred = New-Object System.Management.Automation.PSCredential ("email@email.com", $secpasswd)
-                                                                Send-MailMessage  -SmtpServer $SMTPServer -From 'email@email.com' -To 'email@email.com' -Subject "Server is unavailable $_" -Body "$_ is unavailable for more than 5 minutes. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
+                                                                $cred = New-Object System.Management.Automation.PSCredential ($EmailFrom, $secpasswd)
+                                                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is unavailable $_" -Body "$_ is unavailable for more than 5 minutes. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
                                 
                                                         } 
                                                 } 
@@ -132,7 +132,7 @@ Do{
         $SmtpMessage.Attachments.Add($attachment)
         $SmtpClient = New-Object Net.Mail.SmtpClient($SmtpServer, 587) 
         $SmtpClient.EnableSsl = $true 
-        $SmtpClient.Credentials = New-Object System.Net.NetworkCredential("email@email.com", "lggcvgwwofgcsizr");   
+        $SmtpClient.Credentials = New-Object System.Net.NetworkCredential($EmailFrom, "lggcvgwwofgcsizr");   
         
         $SmtpClient.Send($SmtpMessage)
         $SmtpMessage.Attachments.Dispose()
