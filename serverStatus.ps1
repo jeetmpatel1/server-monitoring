@@ -18,7 +18,7 @@ Do{
         $UnavailableServersList = $Null 
 
         $CurrentTimeStamp= (Get-Date -UFormat "%Y-%m-%d %r %Z" | ForEach-Object { $_ -replace ":", "-" } | ForEach-Object { $_ -replace " ", "_" })
-        $LogFileOutputPath='.\'+$CurrentTimeStamp+".log"
+        $LogFileOutputPath='.\logs\'+$CurrentTimeStamp+".log"
         #New-Item -Path $LogFileOutputPath -ItemType File -Force 
         $StartingText = "Script Started at " + $CurrentTimeStamp
         
