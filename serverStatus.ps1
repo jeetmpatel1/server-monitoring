@@ -18,7 +18,7 @@ Do{
         $UnavailableServersList = $Null 
 
         $CurrentTimeStamp= (Get-Date -UFormat "%Y-%m-%d %r %Z" | ForEach-Object { $_ -replace ":", "-" } | ForEach-Object { $_ -replace " ", "_" })
-        $LogFileOutputPath='.\logs\'+$CurrentTimeStamp+".log"
+        $LogFileOutputPath = $PSScriptRoot+ "\logs\" +  $CurrentTimeStamp + ".log"
         #New-Item -Path $LogFileOutputPath -ItemType File -Force 
         $StartingText = "Script Started at " + $CurrentTimeStamp
         
@@ -125,7 +125,7 @@ Do{
         $Body = $html
 
         
-        $filenameAndPath = $PSScriptRoot+ "\" +  $CurrentTimeStamp + ".log"
+        $filenameAndPath = $LogFileOutputPath
         $SmtpMessage = New-Object System.Net.Mail.MailMessage($EmailFrom,$EmailTo,$Subject,$Body)
         $SmtpMessage.IsBodyHtml = $True;
         $attachment = New-Object System.Net.Mail.Attachment($filenameAndPath)
