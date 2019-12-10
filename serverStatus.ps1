@@ -9,6 +9,7 @@ $EmailTimeOut = 60 # 5 Minutes
 
 $SleepTimeOut =30 # 2 Minutes
 
+$NumberOfTimesToConnectToServerBeforeDeclaringOutage =3
 ###################################################### Config Ended ######################################################
 
 $OutageHosts = $Null 
@@ -30,9 +31,7 @@ Do{
                 if($status){
                         if($OutageHosts -ne $Null -and $OutageHosts.ContainsKey($_)){
                                 #Potential candidate where mail should be sent stating that the server is now available
-                                $secpasswd = ConvertTo-SecureString "lggcvgwwofgcsizr" -AsPlainText -Force
-                                $cred = New-Object System.Management.Automation.PSCredential ($EmailFrom, $secpasswd)
-                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is available $_" -Body "$_ is available now. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
+                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is available $_" -Body "$_ is available now. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"   
                                 $OutageHosts.remove($_)     
                                 [Array]$AvailableServersList += $_    
                         }else{
@@ -44,7 +43,7 @@ Do{
                 else{ 
                         write-output "" | Out-File -FilePath $LogFileOutputPath -Append
                         write-output "Unavailable server ----------------------------> "$_   | Out-File -FilePath $LogFileOutputPath -Append
-                        $status = Test-Connection -ComputerName $_ -Count 3 -ea silentlycontinue -Quiet  
+                        $status = Test-Connection -ComputerName $_ -Count $NumberOfTimesToConnectToServerBeforeDeclaringOutage -ea silentlycontinue -Quiet  
                         if($status){
                                 write-output "host is available now ------------> "$_ | Out-File -FilePath $LogFileOutputPath -Append
                                 [Array]$AvailableServersList += $_
@@ -63,9 +62,7 @@ Do{
                                                         $time = (((Get-Date) - $OutageHosts.Item($_)).TotalMinutes)*60
                                                         Write-output $time | Out-File -FilePath $LogFileOutputPath -Append
                                                         if ($time -gt $EmailTimeOut){
-                                                                $secpasswd = ConvertTo-SecureString "lggcvgwwofgcsizr" -AsPlainText -Force
-                                                                $cred = New-Object System.Management.Automation.PSCredential ($EmailFrom, $secpasswd)
-                                                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is unavailable $_" -Body "$_ is unavailable for more than 5 minutes. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"  -Credential $cred -UseSsl
+                                                                Send-MailMessage  -SmtpServer $SMTPServer -From $EmailFrom -To  $EmailTo -Subject "Server is unavailable $_" -Body "$_ is unavailable for more than 5 minutes. First time stopped at  $($OutageHosts[$_]). Current time is  $(Get-Date)"   
                                 
                                                         } 
                                                 } 
@@ -101,6 +98,9 @@ Do{
         $table.Rows.Add($row)
         $table.Rows.Add($row1)
 
+        $row2 = $table.NewRow()
+        $table.Rows.Add($row2)
+
         foreach ($key in $OutageHosts.Keys){
                 $rowa = $table.NewRow()
                 $rowa.Description = ""+ $key
@@ -130,9 +130,8 @@ Do{
         $SmtpMessage.IsBodyHtml = $True;
         $attachment = New-Object System.Net.Mail.Attachment($filenameAndPath)
         $SmtpMessage.Attachments.Add($attachment)
-        $SmtpClient = New-Object Net.Mail.SmtpClient($SmtpServer, 587) 
-        $SmtpClient.EnableSsl = $true 
-        $SmtpClient.Credentials = New-Object System.Net.NetworkCredential($EmailFrom, "lggcvgwwofgcsizr");   
+        $SmtpClient = New-Object Net.Mail.SmtpClient($SmtpServer) 
+        #$SmtpClient.EnableSsl = $true 
         
         $SmtpClient.Send($SmtpMessage)
         $SmtpMessage.Attachments.Dispose()
