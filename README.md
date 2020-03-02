@@ -1,9 +1,9 @@
 # server-monitoring
 
-This repository contains powershell scripts that can be used to monitor the remote server. Script runs indefinetly and checks the remote server via ping. If it is unavailabel, it waits and try 3 times (default) before defining it as unavilable.
+This repository contains powershell scripts that can be used to monitor the remote server. Script runs indefinetly and checks the remote server via ping. If it is unavailabel, it waits and try 3 times (default) before defining it as unavilable.   
 
 
-# Project Structure and Information
+### Project Structure and Information
 
 
 ```
@@ -31,10 +31,11 @@ project_dir
 | zip_*.log  | log file of log_monitor.ps1 |
 | yyyy-mm-dd.zip | contains all the log files of *.log and zip_*.log |
 | yyyy-mm-dd_hh_mm_ss.zip | If a day has more zip files, then all those zip files are named like this. |
-
-
-
-# Configure Script
+   
+      
+         
+         
+### Configure Script
 
   - Define servers to be monitored in the [serverStatusList.config](https://github.com/jeetmpatel1/server-monitoring/blob/master/serverStatusList.config) file.
   - Define email parameters to be used in the top header of  [serverStatus.ps1](https://github.com/jeetmpatel1/server-monitoring/blob/master/serverStatus.ps1) file. 
